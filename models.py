@@ -1,22 +1,14 @@
-import os
-import sys
-import config
+from app import db
 
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Boolean
-from sqlalchemy import create_engine
-
-Base = declarative_base()
-
-class Guest(Base):
+class Guest(db.Model):
   __tablename__ = 'guests'
 
-  id = Column(Integer, primary_key=True)
-  first_name = Column(String(250), nullable=False)
-  last_name = Column(String(250), nullable=False)
-  additional_guest = Column(Boolean, default=False)
-  ag_first_name = Column(String(250))
-  ag_last_name = Column(String(250))
+  id = db.Column(db.Integer, primary_key=True)
+  first_name = db.Column(db.String(250), nullable=False)
+  last_name = db.Column(db.String(250), nullable=False)
+  additional_guest = db.Column(db.Boolean, default=False)
+  ag_first_name = db.Column(db.String(250))
+  ag_last_name = db.Column(db.String(250))
 
   def __repr__(self):
     return "<User(first_name={0}, last_name={1}, additional_guest={2}".format(
@@ -34,8 +26,4 @@ class Guest(Base):
       'ag_last_name': self.ag_last_name,
     }
 
-#This is required to create the table itself
-dbURI = os.environ['DATABASE_URL']
-engine = create_engine(dbURI)
-
-Base.metadata.create_all(engine)
+db.create_all()

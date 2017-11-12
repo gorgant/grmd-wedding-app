@@ -1,34 +1,26 @@
 import os
 from flask import Flask, jsonify
-
-from sqlalchemy import create_engine
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import sessionmaker
-from models import Base, Guest
+
 
 app = Flask(__name__)
-
-#Ensure we use correct environment
 app.config.from_object(os.environ['APP_SETTINGS'])
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+db = SQLAlchemy(app)
 
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+from models import *
 
-#pull the database URI from the app config settings
-dbURI = app.config['SQLALCHEMY_DATABASE_URI']
-engine = create_engine(dbURI)
-
-#initialize a database session
-Base.metadata.bind = engine
-DBSession = sessionmaker(bind = engine)
-session = DBSession()
-
-newGuest = Guest(first_name="Frank",last_name="Pony")
-session.add(newGuest)
-session.commit()
+def create_dummy_user():
+  newGuest = Guest(first_name="Frank",last_name="Pony")
+  db.session.add(newGuest)
+  db.session.commit()
 
 @app.route('/')
-def hello():
-    guest = session.query(Guest).first()
-    guestList = session.query(Guest).all()
+def home():
+    create_dummy_user()
+    guest = db.session.query(Guest).first()
+    guestList = db.session.query(Guest).all()
     return jsonify(Guest=[i.serialize for i in guestList])
 
 if __name__ == '__main__':
