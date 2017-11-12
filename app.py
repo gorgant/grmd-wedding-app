@@ -31,8 +31,5 @@ def hello():
     guestList = session.query(Guest).all()
     return jsonify(Guest=[i.serialize for i in guestList])
 
-    # return "Welcome " + guest.first_name
-    
-
 if __name__ == '__main__':
     app.run()
